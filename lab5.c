@@ -20,7 +20,6 @@ static ssize_t dev_operator_write(struct file *filp, const char *buffer, size_t 
 
 static ssize_t proc_read(struct file *filp, char *buffer, size_t length, loff_t *offset);
 
-static int device_open(struct inode *inode, struct file *file);
 
 #define BUF_LEN 80
 
@@ -42,7 +41,6 @@ static struct file_operations fops = {
 static struct file_operations dev_first_fops = {
         .owner = THIS_MODULE,
         .write = dev_first_write,
-        .open = device_open
 };
 
 static struct file_operations dev_second_fops = {
@@ -57,10 +55,6 @@ static struct file_operations dev_operator_fops = {
 
 static struct proc_dir_entry *proc_result;
 
-static int device_open(struct inode *inode, struct file *file) {
-    printk("DEVICE_OPEN\n");
-    return 0;
-}
 
 int init_module(void) {
     memset(result, 0, 3);
@@ -102,7 +96,6 @@ static ssize_t proc_read(struct file *filp,    /* see include/linux/fs.h   */
                          char *buffer,    /* buffer to fill with data */
                          size_t length,    /* length of the buffer     */
                          loff_t *offset) {
-    printk("ATTEMT TO READ\n");
     ssize_t cnt;
     ssize_t ret;
     int nfirst;
@@ -110,7 +103,6 @@ static ssize_t proc_read(struct file *filp,    /* see include/linux/fs.h   */
     int nresult;
     sscanf(first, "%d", &nfirst);
     sscanf(second, "%d", &nsecond);
-    printk("----before res-----\n\n -------------\n\n----------\n");
     if (operand[0] == 'p') {
         nresult = nfirst * nsecond;
         sprintf(result, "%d", nresult);
@@ -133,7 +125,6 @@ static ssize_t proc_read(struct file *filp,    /* see include/linux/fs.h   */
     cnt = strlen(result);
     ret = copy_to_user(buffer, result, cnt);
     *offset += cnt - ret;
-	printk("%d %d\n", *offset, cnt);
     if (*offset > cnt)
         return 0;
     else
@@ -141,7 +132,6 @@ static ssize_t proc_read(struct file *filp,    /* see include/linux/fs.h   */
 }
 
 static ssize_t dev_first_write(struct file *filp, const char *buff, size_t len, loff_t *off) {
-    printk("ATTEMT TO WRITE\n");
     if (copy_from_user(first, buff, len)) {
         return -EFAULT;
     }
@@ -149,7 +139,6 @@ static ssize_t dev_first_write(struct file *filp, const char *buff, size_t len, 
 }
 
 static ssize_t dev_second_write(struct file *filp, const char *buff, size_t len, loff_t *off) {
-    printk("ATTEMT TO WRITE\n");
     if (copy_from_user(second, buff, len)) {
         return -EFAULT;
     }
@@ -157,7 +146,6 @@ static ssize_t dev_second_write(struct file *filp, const char *buff, size_t len,
 }
 
 static ssize_t dev_operator_write(struct file *filp, const char *buff, size_t len, loff_t *off) {
-    printk("ATTEMT TO WRITE\n");
     if (copy_from_user(operand, buff, len)) {
         return -EFAULT;
     }

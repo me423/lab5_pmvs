@@ -26,5 +26,6 @@ check 4 - 10 "-6"
 check 4 / 2 "2"
 check 2 p 2 "4"
 check 11 p 11 "121"
+check 9 p 12 "108"
 
 sudo sh unload.sh
