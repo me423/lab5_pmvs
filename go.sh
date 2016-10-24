@@ -1,63 +1,30 @@
-#!/bin/sh
-
-exec 2>error.log
+#!/bin/bash
 
 sudo sh load.sh
-echo "#1 n = 1"\\r
-echo 1 > /dev/calc_number
-result=$(cat /dev/calc_result)
-if [ "$result" -eq "1" ];
-then
-    echo "OK. fib(1) == $result"\\r
-else
-    echo "ERROR. fib(1) != $result"\\r
-fi
+#`dmesg | grep -m 1 "mknod" | awk -F "'" {'print $2'}`
 
+function check {
+    echo $1 > /dev/first
+    echo $2 > /dev/operator
+    echo $3 > /dev/second
+	result=$(cat /proc/result)
+    if [ "$4" == "$result" ]; then
+        echo "True!"
+    else
+        echo "False!"
+	echo "Expected:"
+	echo "$4"
+	echo "Getted:"
+	echo "$result"
+    fi
+}
 
-echo "#2 n = 2"\\r
-echo 2 > /dev/calc_number
-result=$(cat /dev/calc_result)
-if [ "$result" -eq "1" ];
-then
-    echo "OK. fib(2) == $result"\\r
-else
-    echo "ERROR. fib(2) != $result"\\r
-fi
-
-
-echo "#3 n = 3"\\r
-echo 3 > /dev/calc_number
-result=$(cat /dev/calc_result)
-if [ "$result" -eq "2" ];
-then
-    echo "OK. fib(3) == $result"\\r
-else
-    echo "ERROR. fib(3) != $result"\\r
-fi
-
-
-
-echo "#4 n = 10"\\r
-echo 10 > /dev/calc_number
-result=$(cat /dev/calc_result)
-if [ "$result" -eq "55" ];
-then
-    echo "OK. fib(10) == $result"\\r
-else
-    echo "ERROR. fib(10) != $result"\\r
-fi
-
-
-echo "#5 n = -13"\\r
-echo -13 > /dev/calc_number
-result=$(cat /dev/calc_result)
-echo "fib(-13) == $result"\\r
-if [ "$result" -eq "-233" ];
-then
-    echo "OK. fib(-13) == $result"\\r
-else
-    echo "ERROR. fib(-13) != $result"\\r
-fi
-
+check 3 + 2 "5"
+check 3 / 0 "NaN"
+check 4 + 7 "11"
+check 4 - 10 "-6"
+check 4 / 2 "2"
+check 2 p 2 "4"
+check 11 p 11 "121"
 
 sudo sh unload.sh

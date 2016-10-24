@@ -1,3 +1,6 @@
 #!/bin/sh
 
-rmmod lab4 || exit
+rmmod lab5
+rm /dev/first
+rm /dev/operator
+rm /dev/second
